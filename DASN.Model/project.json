@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.EntityFrameworkCore.SqlServer": "2.0.0",
+    "NETStandard.Library": "2.0.1",
+    "System.Runtime.InteropServices": "4.3.0"
+  },
+
+  "frameworks": {
+    "netstandard2.0": {
+        "imports": "dnxcore50"
+    }   
+  }
+}
