@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
-using DASN.Data.Context;
-using DASN.Data.Model;
-using DASN.Data.Service;
+using DASN.Core.Data.Contexts;
+using DASN.Core.Data.Models;
+using DASN.Core.Data.Services;
 using DASN.Data.Test.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;

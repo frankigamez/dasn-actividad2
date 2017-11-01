@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using DASN.Data.Model;
-using DASN.Data.Service;
+using DASN.Core.Data.Models;
+using DASN.Core.Data.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

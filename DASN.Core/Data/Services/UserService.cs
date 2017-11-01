@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using DASN.Data.Model;
+using DASN.Core.Data.Models;
 
-namespace DASN.Data.Service
+namespace DASN.Core.Data.Services
 {
     public class UserService
     {

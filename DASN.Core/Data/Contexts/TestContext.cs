@@ -1,10 +1,10 @@
 ﻿using System.Data.Entity;
-using DASN.Data.Model;
+using DASN.Core.Data.Models;
 using SQLite.CodeFirst;
 
-namespace DASN.Data.Context
+namespace DASN.Core.Data.Contexts
 {
-    public class TestDbContext : System.Data.Entity.DbContext, IContext
+    public class TestDbContext : DbContext, IContext
     {
         public TestDbContext() : base("DASNDBTest") {}
 

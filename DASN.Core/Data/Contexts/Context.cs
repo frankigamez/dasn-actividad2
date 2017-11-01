@@ -1,11 +1,11 @@
 ﻿using System.Data.Entity;
-using DASN.Data.Model;
+using DASN.Core.Data.Models;
 
-namespace DASN.Data.Context
+namespace DASN.Core.Data.Contexts
 {
-    public class DbContext : System.Data.Entity.DbContext, IContext
+    public class Context : DbContext, IContext
     {
-        public DbContext() : base("DASNDB") { }
+        public Context() : base("DASNDB") { }
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Auth> Auths { get; set; }

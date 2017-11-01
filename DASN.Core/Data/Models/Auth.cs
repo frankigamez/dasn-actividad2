@@ -1,19 +1,18 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DASN.Data.Model
+namespace DASN.Core.Data.Models
 {
-    public class Post
+    public class Auth
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public bool IsPublic { get; set; }        
-        public DateTime CreatedAt { get; set; }        
-
+        public int Id { get; set; }       
+        public string Hash { get; set; }
+        public string Salt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
         public int UserId { get; set; }

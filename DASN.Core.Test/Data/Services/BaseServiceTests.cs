@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using DASN.Data.Model;
-using DASN.Data.Service;
+using DASN.Core.Data.Models;
+using DASN.Core.Data.Services;
 using DASN.Data.Test.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using DbContext = DASN.Data.Context.DbContext;
+using Context = DASN.Core.Data.Contexts.Context;
 
 namespace DASN.Data.Test.Service
 {
@@ -24,13 +24,13 @@ namespace DASN.Data.Test.Service
         protected Mock<DbSet<Auth>> _mockAuthSet;
         protected AuthService _authService;
 
-        protected Mock<DbContext> _mockContext;
+        protected Mock<Context> _mockContext;
         
 
         [TestInitialize]
         public void Initialize()
         {
-            _mockContext = new Mock<DbContext>();
+            _mockContext = new Mock<Context>();
 
             _mockUserSet = PrepareMockSet(UserData.AsQueryable());
             _mockContext.Setup(x => x.Users).Returns(_mockUserSet.Object);

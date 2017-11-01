@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using DASN.Data.Model;
+using DASN.Core.Data.Models;
 
 namespace DASN.Data.Test.Helpers
 {

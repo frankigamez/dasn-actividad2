@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
-using DASN.Data.Model;
+using DASN.Core.Data.Models;
 
-namespace DASN.Data
+namespace DASN.Core.Data
 {
     public interface IContext
     {

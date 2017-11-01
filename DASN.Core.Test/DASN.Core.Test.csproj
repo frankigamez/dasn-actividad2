@@ -7,8 +7,8 @@
     <ProjectGuid>{5DC1D917-1B5F-4A67-9E12-4C620DA2BC21}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DASN.Data.Test</RootNamespace>
-    <AssemblyName>DASN.Data.Test</AssemblyName>
+    <RootNamespace>DASN.Core.Test</RootNamespace>
+    <AssemblyName>DASN.Core.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -81,19 +81,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\DbContextHelper.cs" />
     <Compile Include="SecurityTesting\sqlTesting\SqlInjectionTests.cs" />
-    <Compile Include="Service\BaseServiceTests.cs" />
-    <Compile Include="Service\UserServiceTests.cs" />
-    <Compile Include="Service\PostServiceTests.cs" />
-    <Compile Include="Service\AuthServiceTests.cs" />
+    <Compile Include="Data\Services\BaseServiceTests.cs" />
+    <Compile Include="Data\Services\UserServiceTests.cs" />
+    <Compile Include="Data\Services\PostServiceTests.cs" />
+    <Compile Include="Data\Services\AuthServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DASN.Data\DASN.Data.csproj">
+    <ProjectReference Include="..\DASN.Data\DASN.Core.csproj">
       <Project>{CBD4D6D2-4225-4B11-8A0E-AC98C52BC071}</Project>
-      <Name>DASN.Data</Name>
+      <Name>DASN.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
