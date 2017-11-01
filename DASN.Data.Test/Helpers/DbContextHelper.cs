@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace DASN.Data.Test.SecurityTesting.sqlTesting
+namespace DASN.Data.Test.Helpers
 {
     internal class DbContextHelper
     {

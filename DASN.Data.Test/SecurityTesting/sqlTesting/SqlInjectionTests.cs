@@ -5,6 +5,7 @@ using System.Linq;
 using DASN.Data.Context;
 using DASN.Data.Model;
 using DASN.Data.Service;
+using DASN.Data.Test.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -21,7 +22,11 @@ namespace DASN.Data.Test.SecurityTesting.sqlTesting
             _userService = new UserService(_context);
             _postService = new PostService(_context);
             _authService = new AuthService(_context);
-                       
+
+            _context.Posts.ToList().ForEach(x => _context.Posts.Remove(x));
+            _context.Auths.ToList().ForEach(x => _context.Auths.Remove(x));
+            _context.Users.ToList().ForEach(x => _context.Users.Remove(x));
+
             var user1 = _userService.AddUser(email: "user1@test.com", createdAt: DateTime.Now);
             var user2 = _userService.AddUser(email: "user2@test.com", createdAt: DateTime.Now);
 
@@ -41,9 +46,6 @@ namespace DASN.Data.Test.SecurityTesting.sqlTesting
         [TestCleanup]
         public void CleanUp()
         {
-            _context.Posts.ToList().ForEach(x => _context.Posts.Remove(x));
-            _context.Auths.ToList().ForEach(x => _context.Auths.Remove(x));
-            _context.Users.ToList().ForEach(x => _context.Users.Remove(x));
             _context.Dispose();
             DbContextHelper.EndContext();
         }
@@ -166,7 +168,7 @@ namespace DASN.Data.Test.SecurityTesting.sqlTesting
         {
             GetInjects.ForEach(injectTry =>
             {
-                var getted = _authService.GetAllAuthsByUser(new User { Email = injectTry, Id = 0 });
+                var getted = _authService.GetAuthsByUser(new User { Email = injectTry, Id = 0 });
 
                 if (getted.Count > 0)
                     Assert.Fail($"Fail! expected 0 -> getted {getted.Count}");

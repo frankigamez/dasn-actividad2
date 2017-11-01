@@ -75,9 +75,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\AuthHelper.cs" />
+    <Compile Include="Helpers\PostHelper.cs" />
+    <Compile Include="Helpers\UserHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SecurityTesting\sqlTesting\DbContextHelper.cs" />
+    <Compile Include="Helpers\DbContextHelper.cs" />
     <Compile Include="SecurityTesting\sqlTesting\SqlInjectionTests.cs" />
+    <Compile Include="Service\BaseServiceTests.cs" />
+    <Compile Include="Service\UserServiceTests.cs" />
+    <Compile Include="Service\PostServiceTests.cs" />
+    <Compile Include="Service\AuthServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

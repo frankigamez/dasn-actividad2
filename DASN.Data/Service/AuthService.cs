@@ -21,7 +21,7 @@ namespace DASN.Data.Service
             .ToList()
             .FirstOrDefault();            
 
-        public List<Auth> GetAllAuthsByUser(User user) => _context.Auths
+        public List<Auth> GetAuthsByUser(User user) => _context.Auths
             .Where(x => x.UserId == user.Id)
             .OrderBy(x => x.CreatedAt)
             .ToList();
