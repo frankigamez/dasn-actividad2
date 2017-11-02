@@ -1,8 +1,8 @@
 ﻿using System.Configuration;
 
-namespace DASN.Data.Test.Helpers
+namespace DASN.Core.Test.Data.Helpers
 {
-    internal class DbContextHelper
+    internal class ContextHelper
     {
         private const string Dbfile = "test.db";
 

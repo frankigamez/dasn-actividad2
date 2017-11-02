@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DASN.Core.Data.Models;
 
-namespace DASN.Data.Test.Helpers
+namespace DASN.Core.Test.Data.Helpers
 {
     internal class UserHelper
     {

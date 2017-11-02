@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
 using DASN.Core.Data.Contexts;
 using DASN.Core.Data.Models;
 using DASN.Core.Data.Services;
-using DASN.Data.Test.Helpers;
+using DASN.Core.Test.Data.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace DASN.Data.Test.Service
+namespace DASN.Core.Test.Data.Services
 {
     [TestClass]
     public class AuthServiceTests : BaseServiceTests
     {
-        private AuthService Service => _authService;
+        private AuthService Service => AuthService;
 
         [TestMethod]
         public void GetCurrentAuthByUser_Test()
@@ -22,14 +21,14 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetCurrentAuthByUser(user);
 
-                _mockContext.Verify(x => x.Auths, Times.Once);
+                MockContext.Verify(x => x.Auths, Times.Once);
 
                 var expected = AuthData.LastOrDefault(x => x.UserId == user.Id);
                 Assert.AreEqual(result, expected);
                 AuthData.Where(x => x.Id != expected?.Id).ToList()
                     .ForEach(x => Assert.AreNotEqual(result, x));
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
             Validation(UserData[0]); //User has many auth
             Validation(UserData[2]); //User hasn't any auth            
@@ -42,14 +41,14 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetAuthsByUser(user);
 
-                _mockContext.Verify(x => x.Auths, Times.Once);
+                MockContext.Verify(x => x.Auths, Times.Once);
 
                 var expected = AuthData.Where(x => x.UserId == user.Id).ToList();
                 expected.ForEach(x => Assert.IsTrue(result.Contains(x)));
                 AuthData.Where(x => !expected.Contains(x)).ToList()
                     .ForEach(x => Assert.IsFalse(result.Contains(x)));
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
 
             Validation(UserData[0]); //User has Auth
@@ -63,14 +62,14 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetAuthById(id);
 
-                _mockContext.Verify(x => x.Auths, Times.Once);
+                MockContext.Verify(x => x.Auths, Times.Once);
 
                 var expected = AuthData.FirstOrDefault(x => x.Id == id);
                 Assert.AreEqual(result, expected);
                 AuthData.Where(x => x.Id != expected?.Id).ToList()
                     .ForEach(x => Assert.AreNotEqual(result, x));
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
             
             Validation(AuthData[0].Id); //Auth exists
@@ -89,7 +88,7 @@ namespace DASN.Data.Test.Service
                 UserId = UserData[0].Id
             };
 
-            _mockAuthSet.Setup(x => x.Add(It.IsAny<Auth>())).Returns(() =>
+            MockAuthSet.Setup(x => x.Add(It.IsAny<Auth>())).Returns(() =>
             {
                 createdModel.Id = createdId;
                 return createdModel;
@@ -101,7 +100,7 @@ namespace DASN.Data.Test.Service
                 createdAt: createdModel.CreatedAt,
                 userId: createdModel.UserId);
             
-            _mockContext.Verify(x => x.SaveChanges(), Times.Once);
+            MockContext.Verify(x => x.SaveChanges(), Times.Once);
 
             Assert.AreEqual(result, createdModel);
         }
@@ -111,7 +110,7 @@ namespace DASN.Data.Test.Service
         {
             try
             {
-                DbContextHelper.StartContext();
+                ContextHelper.StartContext();
 
                 var context = new TestDbContext();
                 var userService = new UserService(context);
@@ -132,7 +131,7 @@ namespace DASN.Data.Test.Service
             }
             finally
             {
-                DbContextHelper.StartContext();
+                ContextHelper.StartContext();
             }
         }       
     }

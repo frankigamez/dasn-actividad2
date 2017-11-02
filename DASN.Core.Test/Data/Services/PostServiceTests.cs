@@ -4,16 +4,16 @@ using System.Linq;
 using DASN.Core.Data.Contexts;
 using DASN.Core.Data.Models;
 using DASN.Core.Data.Services;
-using DASN.Data.Test.Helpers;
+using DASN.Core.Test.Data.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace DASN.Data.Test.Service
+namespace DASN.Core.Test.Data.Services
 {
     [TestClass]
     public class PostServiceTests : BaseServiceTests
     {
-        private PostService Service => _postService;
+        private PostService Service => PostService;
 
         private readonly List<Tuple<int, int>> _skipTakePairs = new List<Tuple<int, int>>
         {
@@ -33,7 +33,7 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetPublicPosts(skip, take);
 
-                _mockContext.Verify(x => x.Posts, Times.Once);
+                MockContext.Verify(x => x.Posts, Times.Once);
 
                 var expected = PostData.Where(x => x.IsPublic)
                     .Skip(skip).Take(take).ToList();
@@ -44,7 +44,7 @@ namespace DASN.Data.Test.Service
                 if (take > 0) Assert.IsTrue(result.Count <= take);
                 else Assert.IsTrue(result.Count == 0);
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
 
             _skipTakePairs.ForEach(x=> Validation(x.Item1, x.Item2));
@@ -57,7 +57,7 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetPostsByUser(user, skip, take);
 
-                _mockContext.Verify(x => x.Posts, Times.Once);
+                MockContext.Verify(x => x.Posts, Times.Once);
 
                 var expected = PostData.Where(x => x.UserId == user.Id)
                     .Skip(skip).Take(take).ToList();
@@ -68,7 +68,7 @@ namespace DASN.Data.Test.Service
                 if (take > 0) Assert.IsTrue(result.Count <= take);
                 else Assert.IsTrue(result.Count == 0);
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
 
             _skipTakePairs.ForEach(x =>
@@ -85,14 +85,14 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetPostById(id);
 
-                _mockContext.Verify(x => x.Posts, Times.Once);
+                MockContext.Verify(x => x.Posts, Times.Once);
 
                 var expected = PostData.FirstOrDefault(x => x.Id == id);
                 Assert.AreEqual(result, expected);
                 PostData.Where(x => x.Id != expected?.Id).ToList()
                     .ForEach(x => Assert.AreNotEqual(result, x));
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
 
             Validation(PostData[0].Id); //Post exists
@@ -112,7 +112,7 @@ namespace DASN.Data.Test.Service
                 IsPublic = true
             };
 
-            _mockPostSet.Setup(x => x.Add(It.IsAny<Post>())).Returns(() =>
+            MockPostSet.Setup(x => x.Add(It.IsAny<Post>())).Returns(() =>
             {
                 createdModel.Id = createdId;
                 return createdModel;
@@ -125,7 +125,7 @@ namespace DASN.Data.Test.Service
                 createdAt: createdModel.CreatedAt,
                 userId: createdModel.UserId);
 
-            _mockContext.Verify(x => x.SaveChanges(), Times.Once);
+            MockContext.Verify(x => x.SaveChanges(), Times.Once);
 
             Assert.AreEqual(result, createdModel);
         }
@@ -135,7 +135,7 @@ namespace DASN.Data.Test.Service
         {
             try
             {
-                DbContextHelper.StartContext();
+                ContextHelper.StartContext();
 
                 var context = new TestDbContext();
                 var userService = new UserService(context);
@@ -156,7 +156,7 @@ namespace DASN.Data.Test.Service
             }
             finally
             {
-                DbContextHelper.StartContext();
+                ContextHelper.StartContext();
             }
         }
     }

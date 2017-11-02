@@ -5,12 +5,12 @@ using DASN.Core.Data.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace DASN.Data.Test.Service
+namespace DASN.Core.Test.Data.Services
 {
     [TestClass]
     public class UserServiceTests : BaseServiceTests
     {
-        private UserService Service => _userService;        
+        private UserService Service => UserService;        
 
         [TestMethod]
         public void GetUserById_Test()
@@ -19,14 +19,14 @@ namespace DASN.Data.Test.Service
             {
                 var result = Service.GetUserById(id);
 
-                _mockContext.Verify(x => x.Users, Times.Once);
+                MockContext.Verify(x => x.Users, Times.Once);
 
                 var expected = UserData.FirstOrDefault(x => x.Id == id);
                 Assert.AreEqual(result, expected);
                 UserData.Where(x => x.Id != expected?.Id).ToList()
                     .ForEach(x => Assert.AreNotEqual(result, x));
 
-                _mockContext.ResetCalls();
+                MockContext.ResetCalls();
             }
 
             Validation(UserData[0].Id); //User exists
@@ -43,7 +43,7 @@ namespace DASN.Data.Test.Service
                 Email = Guid.NewGuid().ToString()
             };
 
-            _mockUserSet.Setup(x => x.Add(It.IsAny<User>())).Returns(() =>
+            MockUserSet.Setup(x => x.Add(It.IsAny<User>())).Returns(() =>
             {
                 createdModel.Id = createdId;
                 return createdModel;
@@ -53,7 +53,7 @@ namespace DASN.Data.Test.Service
                 email: createdModel.Email,
                 createdAt: createdModel.CreatedAt);
 
-            _mockContext.Verify(x => x.SaveChanges(), Times.Once);
+            MockContext.Verify(x => x.SaveChanges(), Times.Once);
 
             Assert.AreEqual(result, createdModel);
         }        
