@@ -1,0 +1,25 @@
+﻿@model DASN.WebApp.Models.ViewModels.DASNote.ShowDASNoteViewModel
+@{
+    ViewBag.Title = "Delete DASNote";
+}
+
+<h2>@ViewBag.Title.</h2>
+<a>@Model.CreatedBy</a>
+    <small>@Model.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
+    <p>@Model.Content</p>
+@using (Html.BeginForm(controllerName: "DASNote", actionName: "ConfirmDelete", method: FormMethod.Post, htmlAttributes: new {@class = "form-horizontal", role = "form"}))
+{
+    @Html.AntiForgeryToken()
+    <h4>Are you sure?.</h4>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Yes"/>
+            <a href="@Request.UrlReferrer" class="btn btn-default">No</a>
+        </div>
+    </div>    
+    @Html.HiddenFor(m => m.DASNoteToken)        
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "DASNote Created";
+}
+
+<h2>@ViewBag.Title.</h2>
+<div>
+    <p>
+        Thank you for DASNote!
+    </p>
+    <a href="@Url.Action(actionName: "Create", controllerName: "DASNote")" class="btn btn-primary">Create other DASNote</a>   
+    <a href="@Url.Action(actionName: "MyDASNotes", controllerName: "DASNote")" class="btn btn-primary">Show all</a>
+</div>
