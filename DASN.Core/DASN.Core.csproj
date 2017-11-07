@@ -110,18 +110,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataContexts\BaseContext.cs" />
-    <Compile Include="DataContexts\Context.cs" />
-    <Compile Include="DataContexts\TestContext.cs" />
-    <Compile Include="DataContexts\IContext.cs" />
-    <Compile Include="Identity\IdentityService.cs" />
-    <Compile Include="Identity\ResourceProtectionService.cs" />
-    <Compile Include="Models\DataModels\Post.cs" />
-    <Compile Include="Models\DataModels\ApplicationUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataServices\PostService.cs" />
-    <Compile Include="Models\EntryModels\Login.cs" />
-    <Compile Include="DataServices\ApplicationUserService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
