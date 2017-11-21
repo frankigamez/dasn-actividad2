@@ -1,0 +1,27 @@
+﻿@using DASN.PortableWebApp.Models.ViewModels.DASNote
+@model ShowDASNoteCollectionViewModel
+@{
+    ViewBag.Title = Model.CreatedBy + " DASNotes";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<div class="form-horizontal">
+    @foreach (var item in Model)
+    {
+        <div>
+            <hr/>
+            <small>@item.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
+            @if (item.Content.Length > 100)
+            {
+                <p>@item.Content.Substring(0, 97) ...</p>
+            }
+            else
+            {
+                <p>@item.Content</p>
+            }
+            
+            <a asp-controller="DASNote" asp-action="Show" asp-route-id="@item.DASNoteToken" class="btn btn-primary btn-xs">Show more...</a>            
+        </div>        
+    }      
+</div>

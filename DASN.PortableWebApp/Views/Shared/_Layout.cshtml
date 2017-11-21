@@ -1,0 +1,64 @@
+﻿@using System
+@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - DASN.3 Application</title>   
+    <link rel="stylesheet" href="~/bundles/site.css" asp-append-version="true"/>
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>                
+                <a asp-controller="Home" asp-action="Index" class="navbar-brand" asp-area="">DASN.3</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a asp-controller="Home" asp-action="About"asp-area="">About</a>
+                    </li>
+                </ul>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-controller="Account" asp-action="LogOff" asp-antiforgery="true" method="post" id="logoutForm" class="navbar-right">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a asp-controller="Manage" asp-action="Index" id="registerLink" title="Manage">"Hello " + @User.Identity.GetUserName() + "!"</a>
+                            </li>
+                            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                        </ul>
+                    </form>
+                }
+                else
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a asp-controller="Account" asp-action="Register" id="registerLink">Register</a>
+                        </li>
+                        <li>
+                            <a asp-controller="Account" asp-action="Login" id="loginLink">Log in</a>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My DASN.3 Application</p>
+        </footer>
+    </div>
+
+    <script src="~/bundles/site.js" asp-append-version="true"></script>    
+</body>
+</html>

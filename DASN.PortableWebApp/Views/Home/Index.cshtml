@@ -1,0 +1,80 @@
+﻿@using System.Linq
+@using DASN.PortableWebApp.Models.ViewModels.Home
+@model IndexViewModel
+@{
+    ViewBag.Title = "Home";
+}
+
+<div class="row">
+    <div class="col-md-5">        
+        @if (!Model.IsAuthed)
+        { 
+            <h2>Do you want to become a DASNoteator??</h2>                              
+            <a asp-controller="Account" asp-action="Register" class="btn btn-default">Go to register...</a>
+        }
+        else
+        {
+            <h2>Your DASNotes</h2>
+            if (Model.MyLastsPosts.Any())
+            {
+                <a asp-controller="DASNote" asp-action="Create" class="btn btn-default">Go to creator...</a>     
+                <a asp-controller="DASNote" asp-action="MyDASNotes" class="btn btn-default">Show all</a>     
+                
+                 foreach (var item in Model.MyLastsPosts)
+                 {
+                     <div>
+                         <div>
+                             <hr/>
+                             <a asp-controller="DASNote" asp-action="AuthoredBy" asp-route-id="@item.CreatorToken" class="navbar-brand">@item.CreatedBy</a>
+                             <small>@item.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
+                             @if (item.Content.Length > 100)
+                             {
+                                <p>@item.Content.Substring(0, 97) ...</p>
+                             }
+                             else
+                             {
+                                 <p>@item.Content</p>
+                             }
+                             <a asp-controller="DASNote" asp-action="Show" asp-route-id="@item.DASNoteToken" class="btn btn-primary btn-xs">Show more...</a>                             
+                         </div>
+                     </div>
+                 }
+             }
+             else
+             {
+                 <h4>Come on! publish your first DASNote!</h4>
+                 <a asp-controller="DASNote" asp-action="Create" class="btn btn-default">Go to creator...</a>
+            }
+        }
+    </div>
+    <div class="col-md-2"></div>
+    <div class="col-md-5">
+        <h2>Public DASNotes...</h2>
+        @if (Model.LastPublicPosts.Any())
+        {
+            foreach (var item in Model.LastPublicPosts)
+            {
+                <div>
+                    <div>
+                        <hr/>
+                        <a asp-controller="DASNote" asp-action="AuthoredBy" asp-route-id="@item.CreatorToken" class="navbar-brand">@item.CreatedBy</a>                       
+                        <small>@item.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
+                        @if (item.Content.Length > 100)
+                        {
+                            <p>@item.Content.Substring(0, 97) ...</p>
+                        }
+                        else
+                        {
+                            <p>@item.Content</p>
+                        }
+                        <a asp-controller="DASNote" asp-action="Show" asp-route-id="@item.DASNoteToken" class="btn btn-primary btn-xs">Show more...</a>                       
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <h4>Nothing? Nobody publishes a DASNote?? :(</h4>
+        }
+    </div>    
+</div>

@@ -1,0 +1,33 @@
+﻿@using DASN.PortableWebApp.Models.ViewModels.DASNote
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model CreateDASNoteViewModel
+@{
+    ViewBag.Title = "DASNote";
+}
+
+<h2>@ViewBag.Title.</h2>
+<form asp-controller="DASNote" asp-action="Create" asp-antiforgery="true" method="post" class="form-horizontal" role="form">
+    <h4>Create a new DASNote.</h4>
+    <hr />
+    
+    <div class="form-group">
+        <label asp-for="Content" class = "col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <textarea asp-for="Content" class="form-control"></textarea>
+            @Html.ValidationMessageFor(m => m.Content, "", new {@class = "text-danger"})
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="checkbox">
+                <input type="checkbox" asp-for="IsPublic"/>
+                <label asp-for="IsPublic"></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Create" />
+        </div>
+    </div>
+</form>

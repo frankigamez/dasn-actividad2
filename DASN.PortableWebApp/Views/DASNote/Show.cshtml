@@ -1,0 +1,16 @@
+﻿@model DASN.PortableWebApp.Models.ViewModels.DASNote.ShowDASNoteViewModel
+@{
+    ViewBag.Title = "Show DASNote";    
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<div class="form-horizontal">
+    <a asp-controller="DASNote" asp-action="@(Model.CreatorToken == ViewBag.User ? "MyDASNotes" : "AuthoredBy")" asp-route-id="@Model.CreatorToken">@Model.CreatedBy</a>   
+    <small>@Model.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
+    <p>@Model.Content</p>
+    @if (Model.CreatorToken == ViewBag.User)
+    {
+        <a asp-controller="DASNote" asp-action="Delete" asp-route-id="@Model.DASNoteToken" class="btn btn-default">Delete</a>
+    }
+</div>

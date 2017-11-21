@@ -1,0 +1,21 @@
+﻿@using DASN.PortableWebApp.Models.ViewModels.DASNote
+@model ShowDASNoteViewModel
+@{
+    ViewBag.Title = "Delete DASNote";
+}
+
+<h2>@ViewBag.Title.</h2>
+<a>@Model.CreatedBy</a>
+<small>@Model.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
+<p>@Model.Content</p>
+
+<form asp-controller="DASNote" asp-action="ConfirmDelete" asp-antiforgery="true" method="post" class="form-horizontal" role="form">
+    <h4>Are you sure?.</h4>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Yes"/>
+            <a href="@ViewBag.UrlReferrer" class="btn btn-default">No</a>
+        </div>
+    </div>    
+    <input type="hidden" asp-for="DASNoteToken"/>
+</form>
