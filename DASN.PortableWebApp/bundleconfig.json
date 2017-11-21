@@ -9,7 +9,7 @@
       "wwwroot/lib/jquery-validation/dist/additional-methods.js",
       "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js",
       "wwwroot/lib/bootstrap/dist/js/bootstrap.js",
-      "wwwroot/lib/site.js"
+      "wwwroot/js/site.js"
     ]
   },
   {
@@ -20,7 +20,7 @@
       "wwwroot/lib/jquery-validation/dist/additional-methods.js",
       "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js",
       "wwwroot/lib/bootstrap/dist/js/bootstrap.js",
-      "wwwroot/lib/site.js"
+      "wwwroot/js/site.js"
     ], 
     "minify": {
       "enabled": true,
