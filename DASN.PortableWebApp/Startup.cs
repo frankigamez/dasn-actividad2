@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,9 +20,9 @@ namespace DASN.PortableWebApp
             Configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json")
-                    .AddUserSecrets("appsettings.Secrets.json")
+                    .AddJsonFile("appsettings.private.json")
                     .AddEnvironmentVariables()                    
-                    .Build();
+                    .Build();            
         }
 
         private IConfiguration Configuration { get; }
@@ -30,10 +31,8 @@ namespace DASN.PortableWebApp
         public void ConfigureServices(IServiceCollection services)
         {            
             services.AddDbContext<DASNDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));
-            //services.AddDbContext<DASNDbContext>(options =>
-            //    options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-
+                options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));                       
+            
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DASNDbContext>()
                 .AddDefaultTokenProviders();
@@ -98,7 +97,7 @@ namespace DASN.PortableWebApp
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-            });                       
+            });            
         }
     }
 }

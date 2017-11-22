@@ -1,3 +1,4 @@
 /obj/
 /bin/
 *.Secrets.json
+/appsettings.private.json
