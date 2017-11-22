@@ -17,10 +17,13 @@ namespace DASN.PortableWebApp
     {
         public Startup(IHostingEnvironment env)
         {
+            var privatesettings = "appsettings.private.json";
+            if (!new FileInfo(privatesettings).Exists) privatesettings = "appsettings.fake.json";
+            
             Configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json")
-                    .AddJsonFile("appsettings.private.json")
+                    .AddJsonFile("appsettings.json")            
+                    .AddJsonFile(privatesettings)
                     .AddEnvironmentVariables()                    
                     .Build();            
         }
