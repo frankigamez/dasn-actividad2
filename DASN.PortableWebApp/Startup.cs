@@ -58,7 +58,7 @@ namespace DASN.PortableWebApp
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyz" +
                                                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
                                                          "0123456789!#$%&'*+-/=?^_`{|}~.@";
-            });
+            });                       
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -70,6 +70,8 @@ namespace DASN.PortableWebApp
                 options.AccessDeniedPath = "/Account/Login"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = true;
             });
+
+            services.Configure<EmailSenderServiceSettings>(Configuration.GetSection("EmailSenderServiceSettings"));
             
             // Add application services.
             services.AddTransient<EmailSenderService>();
