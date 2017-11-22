@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using DASN.PortableWebApp.Models;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Services;
@@ -13,20 +14,25 @@ namespace DASN.PortableWebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            Configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .AddUserSecrets("appsettings.Secrets.json")
+                    .AddEnvironmentVariables()                    
+                    .Build();
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {            
-            //services.AddDbContext<DASNDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));
             services.AddDbContext<DASNDbContext>(options =>
-                options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+                options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));
+            //services.AddDbContext<DASNDbContext>(options =>
+            //    options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DASNDbContext>()
@@ -90,7 +96,7 @@ namespace DASN.PortableWebApp
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-            });                            
+            });                       
         }
     }
 }
