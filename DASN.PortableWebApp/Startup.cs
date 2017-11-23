@@ -1,15 +1,19 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net;
 using DASN.PortableWebApp.Models;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace DASN.PortableWebApp
 {
@@ -32,13 +36,19 @@ namespace DASN.PortableWebApp
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {     
+            //Database:
+            //----------------------
             services.AddDbContext<DASNDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));                       
+            //----------------------
             
+            
+            //Identity:
+            //----------------------
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DASNDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders();                      
             
             services.Configure<IdentityOptions>(options =>
             {
@@ -62,9 +72,9 @@ namespace DASN.PortableWebApp
                                                          "0123456789!#$%&'*+-/=?^_`{|}~.@";
             });                       
 
+            // Cookie settings
             services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings
+            {                
                 options.Cookie.HttpOnly = true;
                 options.Cookie.Expiration = TimeSpan.FromDays(30);
                 options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
@@ -72,18 +82,40 @@ namespace DASN.PortableWebApp
                 options.AccessDeniedPath = "/Account/Login"; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = true;
             });
-
-            services.Configure<EmailSenderServiceSettings>(Configuration.GetSection("EmailSenderServiceSettings"));
+            //----------------------
             
-            // Add application services.
+            
+            //Messaging:
+            //----------------------
+            services.Configure<EmailSenderServiceSettings>(Configuration.GetSection("EmailSenderServiceSettings"));
+            //----------------------
+            
+            
+            //Caching:
+            //----------------------
+            var redisConnectionString = Configuration.GetConnectionString("Redis");
+            services.AddDataProtection().PersistKeysToRedis(ConnectionMultiplexer.Connect(redisConnectionString), "DataProtection-Keys");
+            services.AddOptions();
+            
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = redisConnectionString;
+                option.InstanceName = "master";
+            });
+            //----------------------
+            
+            
+            //Services:
+            //----------------------
             services.AddTransient<EmailSenderService>();
             services.AddTransient<DASNoteService>();
             services.AddTransient<AntibotService>();
             services.AddTransient<DASNDbContext>();            
             services.AddTransient<UserManager<ApplicationUser>>();
             services.AddTransient<SignInManager<ApplicationUser>>();
-                        
-            services.AddMvc();
+            //----------------------
+            
+            services.AddMvc();               
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
