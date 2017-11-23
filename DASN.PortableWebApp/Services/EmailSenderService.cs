@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
 using MailKit.Net.Smtp;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.AzureAppServices.Internal;
 using Microsoft.Extensions.Options;
 using MimeKit;
 

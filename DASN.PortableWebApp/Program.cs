@@ -13,21 +13,14 @@ namespace DASN.PortableWebApp
         {
             var host = BuildWebHost(args);
 
-            try
-            {
-                using (var scope = host.Services.CreateScope())
-                using (var context = scope.ServiceProvider.GetRequiredService<DASNDbContext>())
-                    context.Database.Migrate();
-            }
-            catch (Exception ex)
-            {
-            }
-        
+            using (var scope = host.Services.CreateScope())
+            using (var context = scope.ServiceProvider.GetRequiredService<DASNDbContext>())
+                context.Database.Migrate();
         
             host.Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        private static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseUrls("http://0.0.0.0:8080")

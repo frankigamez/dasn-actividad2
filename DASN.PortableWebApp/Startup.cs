@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
 using DASN.PortableWebApp.Models;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Services;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -100,7 +97,7 @@ namespace DASN.PortableWebApp
             services.AddDistributedRedisCache(option =>
             {
                 option.Configuration = redisConnectionString;
-                option.InstanceName = "master";
+                option.InstanceName = "dasncache";
             });
             //----------------------
             
