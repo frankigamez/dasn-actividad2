@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DASN.PortableWebApp.Models;
 using DASN.PortableWebApp.Models.DataModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace DASN.PortableWebApp.Services
 {
@@ -16,6 +17,7 @@ namespace DASN.PortableWebApp.Services
         }
 
         public List<DASNote> GetDASNotesByUser(ApplicationUser user, int skip = 0, int take = 10) => _context.DASNotes
+            .Include(x => x.User)
             .Where(x => x.UserId == user.Id)
             .OrderByDescending(x => x.CreatedAt)
             .Skip(skip)
@@ -23,6 +25,7 @@ namespace DASN.PortableWebApp.Services
             .ToList();
 
         public List<DASNote> GetPublicDASNotesByUser(ApplicationUser user,int skip = 0, int take = 10) => _context.DASNotes
+            .Include(x => x.User)
             .Where(x => x.IsPublic && x.UserId == user.Id)
             .OrderByDescending(x => x.CreatedAt)
             .Skip(skip)
@@ -30,6 +33,7 @@ namespace DASN.PortableWebApp.Services
             .ToList();
 
         public List<DASNote> GetPublicDASNotes(int skip = 0, int take = 10) => _context.DASNotes
+            .Include(x => x.User)
             .Where(x => x.IsPublic)
             .OrderByDescending(x => x.CreatedAt)
             .Skip(skip)
@@ -37,6 +41,7 @@ namespace DASN.PortableWebApp.Services
             .ToList();
 
         public DASNote GetDASNoteById(Guid id) => _context.DASNotes
+            .Include(x => x.User)
             .FirstOrDefault(x => x.Id == id);
 
         public DASNote RemoveDASNote(Guid id, ApplicationUser user)

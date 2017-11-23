@@ -8,12 +8,11 @@
 <h2>@ViewBag.Title.</h2>
 <form asp-controller="DASNote" asp-action="Create" asp-antiforgery="true" method="post" class="form-horizontal" role="form">
     <h4>Create a new DASNote.</h4>
-    <hr />
-    
+    <hr />    
     <div class="form-group">
         <label asp-for="Content" class = "col-md-2 control-label"></label>
         <div class="col-md-10">
-            <textarea asp-for="Content" class="form-control"></textarea>
+            <textarea asp-for="Content" class="form-control"></textarea>            
             @Html.ValidationMessageFor(m => m.Content, "", new {@class = "text-danger"})
         </div>
     </div>

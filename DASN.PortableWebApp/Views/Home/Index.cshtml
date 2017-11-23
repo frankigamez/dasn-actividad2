@@ -25,7 +25,7 @@
                      <div>
                          <div>
                              <hr/>
-                             <a asp-controller="DASNote" asp-action="AuthoredBy" asp-route-id="@item.CreatorToken" class="navbar-brand">@item.CreatedBy</a>
+                             <a asp-controller="DASNote" asp-action="AuthoredBy" asp-route-id="@item.CreatorToken">@item.CreatedBy</a>
                              <small>@item.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
                              @if (item.Content.Length > 100)
                              {
@@ -57,7 +57,7 @@
                 <div>
                     <div>
                         <hr/>
-                        <a asp-controller="DASNote" asp-action="AuthoredBy" asp-route-id="@item.CreatorToken" class="navbar-brand">@item.CreatedBy</a>                       
+                        <a asp-controller="DASNote" asp-action="AuthoredBy" asp-route-id="@item.CreatorToken">@item.CreatedBy</a>                       
                         <small>@item.CreatedAt.ToString("HH:mm:ss dd/MM/yyyy")</small>
                         @if (item.Content.Length > 100)
                         {
