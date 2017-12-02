@@ -2,3 +2,4 @@
 /bin/
 *.Secrets.json
 /appsettings.private.json
+/trace/

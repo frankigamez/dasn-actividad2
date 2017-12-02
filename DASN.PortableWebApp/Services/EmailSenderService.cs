@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
@@ -11,7 +10,7 @@ namespace DASN.PortableWebApp.Services
         public string Host { get; set; }
         public string Password { get; set; }
         public int Port { get; set; }
-        public bool EnableSSL { get; set; }
+        public bool EnableSsl { get; set; }
                 
     }
     
@@ -24,7 +23,7 @@ namespace DASN.PortableWebApp.Services
             _settings = serviceSettings;
         }
                                         
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public void SendEmail(string email, string subject, string message)
         {            
             var mail = new MimeMessage
             {
@@ -36,13 +35,13 @@ namespace DASN.PortableWebApp.Services
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(_settings.Value.Host, _settings.Value.Port, _settings.Value.EnableSSL);
+                client.Connect(_settings.Value.Host, _settings.Value.Port, _settings.Value.EnableSsl);
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
                 // Note: since we don't have an OAuth2 token, disable
                 // the XOAUTH2 authentication mechanism.
-                await client.AuthenticateAsync(_settings.Value.From, _settings.Value.Password);
-                await client.SendAsync(mail);
-                await client.DisconnectAsync(true);
+                client.Authenticate(_settings.Value.From, _settings.Value.Password);
+                client.Send(mail);
+                client.Disconnect(true);
             }
         }
     }

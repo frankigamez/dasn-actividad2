@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Models.ViewModels.DASNote;
 using DASN.PortableWebApp.Services;
+using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +14,8 @@ namespace DASN.PortableWebApp.Controllers
     [SuppressMessage("ReSharper", "Mvc.ViewNotResolved")]
     public class DASNoteController : BaseController
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(DASNoteController));
+        
         private DASNoteService DASNoteManager { get; set; }
         
         public DASNoteController(UserManager<ApplicationUser> userManager,
@@ -26,23 +28,25 @@ namespace DASN.PortableWebApp.Controllers
         //
         // GET: /DASNote/Index
         [HttpGet]
-        public ActionResult Index() => RedirectToAction(controllerName: "Home", actionName: "Index");
+        public ActionResult Index() 
+            =>Log.TraceActionResult(() => RedirectToAction(controllerName: "Home", actionName: "Index"));
 
         //
         // GET: /DASNote/Create
         [HttpGet]
         [Authorize]
-        public ActionResult Create() 
-            => View();
-
+        public ActionResult Create()  
+            =>Log.TraceActionResult(() => View());
 
         //
         // POST: /DASNote/Create
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateDASNoteViewModel model)
+        public ActionResult Create(CreateDASNoteViewModel model) => Log.TraceActionResult(() =>
         {
+            Log.TraceEntry(name: nameof(model), value: model);
+            
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -55,17 +59,17 @@ namespace DASN.PortableWebApp.Controllers
                 userId: user.Id);
 
             return View("ConfirmCreate");
-        }
+        });
 
         //
         // GET: /DASNote/AuthoredBy/{id}
         [HttpGet]
-        public async Task<ActionResult> AuthoredBy(string id)
+        public ActionResult AuthoredBy(string id) => Log.TraceActionResult(() =>
         {
             var guid = Guid.Parse(id);
 
-            var user = await UserManager.FindByIdAsync(guid.ToString());
-            
+            var user = UserManager.FindByIdAsync(guid.ToString()).Result;
+
             var model = new ShowDASNoteCollectionViewModel
             {
                 CreatedBy = user.UserName,
@@ -82,18 +86,18 @@ namespace DASN.PortableWebApp.Controllers
                     DASNoteToken = x.Id.ToString()
                 }));
 
-            return View("AuthoredBy", (ShowDASNoteCollectionViewModel)model);
-        }
+            return View("AuthoredBy", (ShowDASNoteCollectionViewModel) model);
+        });
 
 
         //
         // GET: /DASNote/MyPosts
         [HttpGet]
         [Authorize]
-        public ActionResult MyDASNotes()
+        public ActionResult MyDASNotes() => Log.TraceActionResult(() =>
         {
             var user = CurrentUser;
-            
+
             var model = new ShowDASNoteCollectionViewModel
             {
                 CreatedBy = user.UserName,
@@ -109,20 +113,22 @@ namespace DASN.PortableWebApp.Controllers
                     CreatorToken = x.User.Id,
                     DASNoteToken = x.Id.ToString()
                 }));
-        
+
             return View("AuthoredBy", model);
-        }
+        });
 
 
         //
         // GET: /DASNote/Show/{id}
         [HttpGet]
-        public ActionResult Show(string id)
-        { 
+        public ActionResult Show(string id) => Log.TraceActionResult(() =>
+        {
+            Log.TraceEntry(name: nameof(id), value: id);
+
             var data = DASNoteManager.GetDASNoteById(Guid.Parse(id));
 
             ViewBag.User = CurrentUserId;
-            
+
             return View(new ShowDASNoteViewModel
             {
                 CreatedAt = data.CreatedAt,
@@ -132,14 +138,16 @@ namespace DASN.PortableWebApp.Controllers
                 IsPublic = data.IsPublic,
                 DASNoteToken = data.Id.ToString()
             });
-        }
+        });
 
         //
         // GET: /DASNote/Delete/{id}
         [HttpGet]
         [Authorize]
-        public ActionResult Delete(string id)
+        public ActionResult Delete(string id) => Log.TraceActionResult(() =>
         {
+            Log.TraceEntry(name: nameof(id), value: id);
+
             var data = DASNoteManager.GetDASNoteById(Guid.Parse(id));
             var user = CurrentUser;
 
@@ -147,7 +155,7 @@ namespace DASN.PortableWebApp.Controllers
                 return RedirectToAction(controllerName: "Account", actionName: "Login");
 
             ViewBag.UrlReferrer = HttpContext.Request.Headers["Referer"];
-            
+
             return View(new ShowDASNoteViewModel
             {
                 CreatedAt = data.CreatedAt,
@@ -157,16 +165,18 @@ namespace DASN.PortableWebApp.Controllers
                 IsPublic = data.IsPublic,
                 DASNoteToken = data.Id.ToString()
             });
-        }
+        });
 
         //
         // POST: /DASNote/ConfirmDelete
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult ConfirmDelete(string DASNoteToken)
+        public ActionResult ConfirmDelete(string dasNoteToken) => Log.TraceActionResult(() =>
         {
-            var data = DASNoteManager.GetDASNoteById(Guid.Parse(DASNoteToken));
+            Log.TraceEntry(name: nameof(dasNoteToken), value: dasNoteToken);
+            
+            var data = DASNoteManager.GetDASNoteById(Guid.Parse(dasNoteToken));
             var user = CurrentUser;
 
             if (data.UserId != user.Id)
@@ -177,6 +187,6 @@ namespace DASN.PortableWebApp.Controllers
                 user: user);
 
             return View("ConfirmDelete");
-        }
+        });
     }
 }

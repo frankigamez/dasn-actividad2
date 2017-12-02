@@ -5,6 +5,7 @@ using System.Linq;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Models.ViewModels.Home;
 using DASN.PortableWebApp.Services;
+using log4net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,8 @@ namespace DASN.PortableWebApp.Controllers
     [SuppressMessage("ReSharper", "Mvc.ViewNotResolved")]
     public class HomeController : BaseController
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HomeController));
+        
         private DASNoteService DASNoteManager { get; set; }
         
         public HomeController(UserManager<ApplicationUser> userManager,
@@ -24,21 +27,22 @@ namespace DASN.PortableWebApp.Controllers
 
         //
         // GET: /Home/Index
-        public ActionResult Index()
+        public ActionResult Index() => Log.TraceActionResult(() =>
         {
             var data = new IndexViewModel();
             var user = User.Identity.IsAuthenticated
                 ? CurrentUser
                 : null;
 
-            data.LastPublicPosts = DASNoteManager.GetPublicDASNotes(skip: 0, take: 10000).Select(x => new PublicDASNoteViewModel
-            {
-                CreatedAt = x.CreatedAt,
-                CreatedBy = x.User.UserName,
-                Content = x.Content,
-                CreatorToken = Guid.Parse(x.User.Id),
-                DASNoteToken = x.Id                    
-            }).ToList();
+            data.LastPublicPosts = DASNoteManager.GetPublicDASNotes(skip: 0, take: 10000).Select(x =>
+                new PublicDASNoteViewModel
+                {
+                    CreatedAt = x.CreatedAt,
+                    CreatedBy = x.User.UserName,
+                    Content = x.Content,
+                    CreatorToken = Guid.Parse(x.User.Id),
+                    DASNoteToken = x.Id
+                }).ToList();
 
             data.MyLastsPosts = user == null
                 ? new List<MyDASNoteViewModel>()
@@ -55,15 +59,12 @@ namespace DASN.PortableWebApp.Controllers
             data.IsAuthed = User.Identity.IsAuthenticated;
 
             return View(data);
-        }
+        });
 
         //
         // GET: /Home/About
-        public ActionResult About() 
-            => View();
+        public ActionResult About() => Log.TraceActionResult(View);
         
-        public ActionResult Error()
-            => View();
-    }
-       
+        public ActionResult Error()=> Log.TraceActionResult(View);
+    }       
 }
