@@ -5,16 +5,16 @@ using System.Linq;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Models.ViewModels.Home;
 using DASN.PortableWebApp.Services;
-using log4net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace DASN.PortableWebApp.Controllers
 {
     [SuppressMessage("ReSharper", "Mvc.ViewNotResolved")]
     public class HomeController : BaseController
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(HomeController));
+        private static ILogger Log => Serilog.Log.Logger;
         
         private DASNoteService DASNoteManager { get; set; }
         
@@ -27,7 +27,7 @@ namespace DASN.PortableWebApp.Controllers
 
         //
         // GET: /Home/Index
-        public ActionResult Index() => Log.TraceActionResult(() =>
+        public ActionResult Index()
         {
             var data = new IndexViewModel();
             var user = User.Identity.IsAuthenticated
@@ -59,12 +59,12 @@ namespace DASN.PortableWebApp.Controllers
             data.IsAuthed = User.Identity.IsAuthenticated;
 
             return View(data);
-        });
+        }
 
         //
         // GET: /Home/About
-        public ActionResult About() => Log.TraceActionResult(View);
+        public ActionResult About() => View();
         
-        public ActionResult Error()=> Log.TraceActionResult(View);
+        public ActionResult Error() => View();
     }       
 }

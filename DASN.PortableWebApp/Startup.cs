@@ -1,18 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using DASN.PortableWebApp.Models;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Services;
-using log4net;
-using log4net.Appender;
-using log4net.Config;
-using log4net.Core;
-using log4net.ElasticSearch;
-using log4net.Layout;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,36 +13,21 @@ using StackExchange.Redis;
 namespace DASN.PortableWebApp
 {
     public class Startup
-    {
-        private readonly ILog _log;
-
-        public Startup(IHostingEnvironment env)
-        {
-            var privatesettings = "appsettings.private.json";
-            if (!new FileInfo(privatesettings).Exists) privatesettings = "appsettings.fake.json";
-
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile(privatesettings)
-                .AddEnvironmentVariables()
-                .Build();
-
-            ConfigureLogger();
-            
-            _log = LogManager.GetLogger(typeof(Startup));
-            _log.Debug("DASN Start!");            
+    {        
+        public Startup(IConfiguration configuration)
+        {           
+            Configuration = configuration;                        
         }         
 
         private IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services) => _log.TraceVoid(() =>
+        public void ConfigureServices(IServiceCollection services)
         {
             //Database:
             //----------------------
             services.AddDbContext<DASNDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));
+                options.UseSqlServer(Configuration.GetConnectionString("DASNDB")));           
             //----------------------
 
 
@@ -131,11 +107,11 @@ namespace DASN.PortableWebApp
             //----------------------
 
             services.AddMvc();
-        });
+        }
         
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env) => _log.TraceVoid(() =>
+        public void Configure(IApplicationBuilder app) 
         {
             app.UseExceptionHandler("/Home/Error");
 
@@ -149,53 +125,6 @@ namespace DASN.PortableWebApp
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-        });
-        
-        
-        private void ConfigureLogger()
-        {        
-            var type = Configuration.GetValue<string>("Logger:Type");
-            IAppender appender = null;
-            
-            var level = Level.All;
-            var name = $"{type}Appender";
-            var layout = new PatternLayout()
-            {
-                ConversionPattern = "%-5p %d{hh:mm:ss} %logger %message%newline"
-            };
-            layout.ActivateOptions();
-
-            if (type.ToLower() == "file")
-            {
-                appender = new RollingFileAppender
-                {
-                    File = "trace/dasn.log",
-                    Layout = layout, Threshold = level, Name = name
-                };
-                ((RollingFileAppender)appender).ActivateOptions();
-            }
-
-            if (type.ToLower() == "elk")
-            {
-                appender = new ElasticSearchAppender
-                {
-                    ConnectionString = Configuration.GetConnectionString("ELK"),
-                    Layout = layout, Threshold = level, Name = name
-                };
-                ((ElasticSearchAppender)appender).ActivateOptions();
-            }
-
-            if (type.ToLower() == "console")
-            {
-                appender = new ConsoleAppender
-                {
-                    Layout = layout, Threshold = level, Name = name
-                };
-                ((ConsoleAppender)appender).ActivateOptions();
-            }
-
-            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            BasicConfigurator.Configure(logRepository, appender);            
         }
     }
 }

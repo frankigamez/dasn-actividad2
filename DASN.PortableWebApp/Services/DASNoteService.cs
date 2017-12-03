@@ -4,6 +4,7 @@ using System.Linq;
 using DASN.PortableWebApp.Models;
 using DASN.PortableWebApp.Models.DataModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace DASN.PortableWebApp.Services
 {

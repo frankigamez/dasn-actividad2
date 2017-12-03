@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using DASN.PortableWebApp.Models.DataModels;
 using DASN.PortableWebApp.Models.ViewModels.Account;
 using DASN.PortableWebApp.Services;
-using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using IdentityResult = Microsoft.AspNetCore.Identity.IdentityResult;
 
 namespace DASN.PortableWebApp.Controllers
@@ -16,8 +16,8 @@ namespace DASN.PortableWebApp.Controllers
     [Authorize]
     [SuppressMessage("ReSharper", "Mvc.ViewNotResolved")]
     public class AccountController : BaseController
-    {                
-        private static readonly ILog Log = LogManager.GetLogger(typeof(AccountController));
+    {
+        private static ILogger Log => Serilog.Log.Logger;
         
         private EmailSenderService EmailSenderService { get; set; }
 
@@ -31,24 +31,20 @@ namespace DASN.PortableWebApp.Controllers
         //
         // GET: /Account/Login
         [AllowAnonymous]
-        public ActionResult Login(string returnUrl) => Log.TraceActionResult(() =>
+        public ActionResult Login(string returnUrl)
         {
-            Log.TraceEntry(name: nameof(returnUrl), value: returnUrl);
             ViewBag.ReturnUrl = returnUrl;
             return View();
-        });
+        }
 
         //
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginViewModel model, string returnUrl) => Log.TraceActionResult(()
-            => new AntibotService(seconds: 5).SecureActionAsync(async () =>
+        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+            => await new AntibotService(seconds: 5).SecureActionAsync(async () =>
             {
-                Log.TraceEntry(name: nameof(model), value: model);
-                Log.TraceEntry(name: nameof(returnUrl), value: returnUrl);                
-                
                 if (!ModelState.IsValid)
                     return View(model);
 
@@ -76,28 +72,26 @@ namespace DASN.PortableWebApp.Controllers
 
                 ModelState.AddModelError("", "Invalid login attempt.");
                 return View(model);
-            }).Result);
+            });
 
         //
         // GET: /Account/Register
         [AllowAnonymous]
-        public ActionResult Register()
-            => Log.TraceActionResult(View);
+        public ActionResult Register() => View();
+            
 
         //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterViewModel model) => Log.TraceActionResult(() =>
+        public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            Log.TraceEntry(name: nameof(model), value: model);
-            
             if (!ModelState.IsValid) 
                 return View(model);
 
             var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
-            var result = UserManager.CreateAsync(user, model.Password).Result;
+            var result = await UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
@@ -105,12 +99,12 @@ namespace DASN.PortableWebApp.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-                var code = UserManager.GenerateEmailConfirmationTokenAsync(user).Result;
+                var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = Url.Action("ConfirmEmail", "Account", new {code = code, token = user.Id},
                     protocol: HttpContext.Request.Scheme);
                 try
                 {
-                    EmailSenderService.SendEmail(email: model.Email, subject: "Confirm your account",
+                    await EmailSenderService.SendEmailAsync(email: model.Email, subject: "Confirm your account",
                         message: "Please confirm your account by clicking here: " + callbackUrl);
                     return View("ConfirmRegister");
                 }
@@ -123,55 +117,49 @@ namespace DASN.PortableWebApp.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
-        });
+        }
 
         //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string code, string token) => Log.TraceActionResult(() =>
+        public async Task<ActionResult> ConfirmEmail(string code, string token)
         {
-            Log.TraceEntry(name: nameof(code), value: code);
-            Log.TraceEntry(name: nameof(token), value: token);
-            
             if (code == null || token == null)
                 return View("Error");
 
-            var user = UserManager.FindByIdAsync(token).Result;
-            var result = UserManager.ConfirmEmailAsync(user, code).Result;
+            var user = await UserManager.FindByIdAsync(token);
+            var result = await UserManager.ConfirmEmailAsync(user, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        });
+        }
 
         //
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
-        public ActionResult ForgotPassword()
-            => Log.TraceActionResult(View);
+        public ActionResult ForgotPassword() => View();
 
         //
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult ForgotPassword(ForgotPasswordViewModel model) => Log.TraceActionResult(() =>
-        {
-            Log.TraceEntry(name: nameof(model), value: model);
-            
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {            
             if (!ModelState.IsValid) 
                 return View(model);
 
-            var user = UserManager.FindByEmailAsync(model.Email).Result;
-            if (user == null || !UserManager.IsEmailConfirmedAsync(user).Result)
+            var user = await UserManager.FindByEmailAsync(model.Email);
+            if (user == null || !await UserManager.IsEmailConfirmedAsync(user))
                 // Don't reveal that the user does not exist or is not confirmed
                 return View("ForgotPasswordConfirmation");
 
             // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
             // Send an email with this link
-            var code = UserManager.GeneratePasswordResetTokenAsync(user).Result;
+            var code = await UserManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action("ResetPassword", "Account", new {code = code},
                 protocol: HttpContext.Request.Scheme);
             try
             {
-                EmailSenderService.SendEmail(email: user.Email, subject: "Reset Password",
+                await EmailSenderService.SendEmailAsync(email: user.Email, subject: "Reset Password",
                     message: "Please reset your password by clicking here: " + callbackUrl);
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
@@ -181,63 +169,55 @@ namespace DASN.PortableWebApp.Controllers
             }
             // If we got this far, something failed, redisplay form
             //return View(model);
-        });
+        }
 
         //
         // GET: /Account/ForgotPasswordConfirmation
         [AllowAnonymous]
-        public ActionResult ForgotPasswordConfirmation()
-            => Log.TraceActionResult(View);
+        public ActionResult ForgotPasswordConfirmation() => View();
 
         //
         // GET: /Account/ResetPassword
         [AllowAnonymous]
-        public ActionResult ResetPassword(string code)
-            => Log.TraceActionResult( () => code == null ? View("Error") : View());
+        public ActionResult ResetPassword(string code) => code == null ? View("Error") : View();
 
         //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult ResetPassword(ResetPasswordViewModel model) => Log.TraceActionResult(() =>
+        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model) => await new AntibotService(5).SecureActionAsync(async () =>
         {
-            return new AntibotService(5).SecureActionAsync(async () =>
-            {
-                Log.TraceEntry(name: nameof(model), value: model);
-                
-                if (!ModelState.IsValid)
-                    return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-                var user = await UserManager.FindByEmailAsync(model.Email);
-                if (user == null)
-                    // Don't reveal that the user does not exist
-                    return RedirectToAction("ResetPasswordConfirmation", "Account");
+            var user = await UserManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                // Don't reveal that the user does not exist
+                return RedirectToAction("ResetPasswordConfirmation", "Account");
 
-                var result = await UserManager.ResetPasswordAsync(user, model.Code, model.Password);
-                if (result.Succeeded)
-                    return RedirectToAction("ResetPasswordConfirmation", "Account");
+            var result = await UserManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+                return RedirectToAction("ResetPasswordConfirmation", "Account");
 
-                AddErrors(result);
-                return View();
-            }).Result;
+            AddErrors(result);
+            return View();
         });
 
         //
         // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
-        public ActionResult ResetPasswordConfirmation()
-            => Log.TraceActionResult(View);
+        public ActionResult ResetPasswordConfirmation() => View();
 
         //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff() => Log.TraceActionResult(() =>
+        public async Task<ActionResult> LogOff()
         {
-            SignInManager.SignOutAsync().GetAwaiter().GetResult();
+            await SignInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
-        });
+        }
 
         protected override void Dispose(bool disposing)
         {
